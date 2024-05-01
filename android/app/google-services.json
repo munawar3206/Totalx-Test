@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "338437397831",
+    "project_id": "userdatabase-be5e3",
+    "storage_bucket": "userdatabase-be5e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338437397831:android:0699354f4b6c92f5680062",
+        "android_client_info": {
+          "package_name": "com.example.totalxtask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkNN2rbd2cnvi174W8gAj_tmComSUaePQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
