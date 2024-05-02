@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:totalxtask/controller/home_controller.dart';
 import 'package:totalxtask/firebase_options.dart';
 import 'package:totalxtask/view/homepage.dart';
 
@@ -20,11 +22,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        home: HomePage()
-        // auth.currentUser != null ? HomePage() : LoginPage(),
-        );
+    return 
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) =>HomeProvider() ,)],
+      child: const MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          home: HomePage()
+          // auth.currentUser != null ? HomePage() : LoginPage(),
+          ),
+    );
   }
 }
