@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:totalxtask/view/otp.dart';
 
 class LoginPage extends StatelessWidget {
-   LoginPage({super.key});
+  LoginPage({super.key});
 
   final TextEditingController _phoneNumberController = TextEditingController();
 
@@ -20,7 +20,10 @@ class LoginPage extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => OtpScreen(verificationid: verificationId,phoneNumberController: phoneNumber,),
+                builder: (context) => OtpScreen(
+                  verificationid: verificationId,
+                  phoneNumberController: phoneNumber,
+                ),
               ));
         },
         codeAutoRetrievalTimeout: (String verificationId) {});

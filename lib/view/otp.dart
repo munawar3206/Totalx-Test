@@ -7,10 +7,10 @@ class OtpScreen extends StatelessWidget {
   final String phoneNumberController;
 
   OtpScreen({
-    Key? key,
+    super.key,
     required this.verificationid,
     required this.phoneNumberController,
-  }) : super(key: key);
+  });
 
   final List<TextEditingController> _otpControllers = List.generate(
     6,
@@ -34,7 +34,7 @@ class OtpScreen extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => const HomePage(),
         ),
       );
     } catch (e) {
@@ -42,6 +42,7 @@ class OtpScreen extends StatelessWidget {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -74,13 +75,13 @@ class OtpScreen extends StatelessWidget {
                           padding: const EdgeInsets.only(left: 20, right: 20),
                           child: Text(
                             'Enter the verification code we just sent to your number ${phoneNumberController.toString()}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Color.fromARGB(255, 0, 0, 0),
                               fontSize: 14,
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Row(
@@ -98,7 +99,7 @@ class OtpScreen extends StatelessWidget {
                                   focusNode: _focusNodes[index],
                                   keyboardType: TextInputType.number,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.red,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
@@ -126,7 +127,7 @@ class OtpScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -141,7 +142,7 @@ class OtpScreen extends StatelessWidget {
                             ),
                             TextButton(
                               onPressed: () {},
-                              child: Text(
+                              child: const Text(
                                 "Resend",
                                 style: TextStyle(color: Colors.blue),
                               ),

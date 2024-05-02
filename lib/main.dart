@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:totalxtask/firebase_options.dart';
 import 'package:totalxtask/view/homepage.dart';
-import 'package:totalxtask/view/login_page.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,12 +16,15 @@ void main() async {
 class MyApp extends StatelessWidget {
   var auth = FirebaseAuth.instance;
 
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: auth.currentUser != null ? HomePage() : LoginPage(),
-    );
+    return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        home: HomePage()
+        // auth.currentUser != null ? HomePage() : LoginPage(),
+        );
   }
 }
