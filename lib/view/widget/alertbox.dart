@@ -4,25 +4,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:totalxtask/controller/add_data_provider.dart';
 
-class AlertBoxWidget extends StatefulWidget {
-  const AlertBoxWidget({
+class AlertBoxWidget extends StatelessWidget {
+  AlertBoxWidget({
     super.key,
   });
 
-  @override
-  State<AlertBoxWidget> createState() => _AlertBoxWidgetState();
-}
-
-class _AlertBoxWidgetState extends State<AlertBoxWidget> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
   final CollectionReference _items =
       FirebaseFirestore.instance.collection("Upload_Items");
-  String imageUrl = "";
 
   @override
   Widget build(BuildContext context) {
+    final userprovider = Provider.of<UserProvider>(context);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: Column(
@@ -40,8 +35,9 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
               children: [
                 CircleAvatar(
                   radius: 35,
-                  backgroundImage:
-                      imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+                  backgroundImage: userprovider.imageUrl.isNotEmpty
+                      ? NetworkImage(userprovider.imageUrl)
+                      : null,
                 ),
                 Positioned(
                   top: 42,
@@ -96,8 +92,8 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                                         style: ElevatedButton.styleFrom(
                                           shape: const CircleBorder(),
                                           elevation: 20,
-                                          backgroundColor:
-                                              Color.fromARGB(255, 0, 0, 0),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 0, 0, 0),
                                         ),
                                         onPressed: () async {
                                           // add imagepicker for gallery
@@ -122,10 +118,10 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                                           try {
                                             await referenceImageToUpload
                                                 .putFile(File(file.path));
-                                            setState(() {
-                                              imageUrl = '';
-                                            });
-                                            imageUrl =
+
+                                            userprovider.imageUrl = '';
+                                            // });
+                                            userprovider.imageUrl =
                                                 await referenceImageToUpload
                                                     .getDownloadURL();
                                           } catch (e) {}
@@ -152,8 +148,8 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                                         style: ElevatedButton.styleFrom(
                                           shape: const CircleBorder(),
                                           elevation: 20,
-                                          backgroundColor:
-                                              Color.fromARGB(255, 0, 0, 0),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 0, 0, 0),
                                         ),
                                         onPressed: () async {
                                           // add imagepicker for gallery
@@ -178,10 +174,10 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                                           try {
                                             await referenceImageToUpload
                                                 .putFile(File(file.path));
-                                            setState(() {
-                                              imageUrl = '';
-                                            });
-                                            imageUrl =
+
+                                            userprovider.imageUrl = '';
+
+                                            userprovider.imageUrl =
                                                 await referenceImageToUpload
                                                     .getDownloadURL();
                                           } catch (e) {}
@@ -230,7 +226,7 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
             height: 5,
           ),
           TextFormField(
-            controller: _nameController,
+            controller: userprovider.nameController,
             decoration: InputDecoration(
               hintText: "Enter name",
               border: OutlineInputBorder(
@@ -251,14 +247,14 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
             height: 5,
           ),
           TextFormField(
-            controller: _ageController,
+            controller: userprovider.ageController,
             decoration: InputDecoration(
               hintText: "Enter Age",
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10, horizontal: 15), // Adjust padding here
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             ),
           ),
           const SizedBox(
@@ -294,22 +290,23 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                     color: const Color.fromARGB(255, 49, 73, 255)),
                 child: MaterialButton(
                   onPressed: () async {
-                    if (imageUrl.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    if (userprovider.imageUrl.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text("Please select and Upload Image"),
                       ));
                       return;
                     }
-                    final String name = _nameController.text;
-                    final int? age = int.tryParse(_ageController.text);
+                    final String name = userprovider.nameController.text;
+                    final int? age =
+                        int.tryParse(userprovider.ageController.text);
                     if (age != null) {
                       await _items.add({
                         "name": name,
                         "age": age,
-                        "image": imageUrl,
+                        "image": userprovider.imageUrl,
                       });
-                      _nameController.text = "";
-                      _ageController.text = '';
+                      userprovider.nameController.text = "";
+                      userprovider.ageController.text = '';
 
                       Navigator.pop(context);
                     }

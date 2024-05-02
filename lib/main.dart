@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:totalxtask/controller/home_controller.dart';
+import 'package:totalxtask/controller/add_data_provider.dart';
+import 'package:totalxtask/controller/home_provider.dart';
 import 'package:totalxtask/firebase_options.dart';
 import 'package:totalxtask/view/homepage.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,9 +22,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) =>HomeProvider() ,)],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => HomeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
+        )
+      ],
       child: const MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',

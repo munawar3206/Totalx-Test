@@ -1,4 +1,5 @@
-// home_provider.dart
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -7,6 +8,7 @@ class HomeProvider extends ChangeNotifier {
   late String _selectedAgeOption;
   late String _searchQuery;
 
+// constructor for initial load
   HomeProvider() {
     _selectedAgeOption = '';
     _searchQuery = '';
@@ -16,14 +18,14 @@ class HomeProvider extends ChangeNotifier {
   Stream<QuerySnapshot> get stream => _stream;
 
   String get selectedAgeOption => _selectedAgeOption;
-
+// filter with selectedage
   void setSelectedAgeOption(option) {
     _selectedAgeOption = option;
     notifyListeners();
   }
 
   String get searchQuery => _searchQuery;
-
+// searchquery
   void setSearchQuery(query) {
     _searchQuery = query;
     notifyListeners();
@@ -55,5 +57,20 @@ class HomeProvider extends ChangeNotifier {
     }
 
     return items;
+  }
+
+// delete user with name
+  Future<void> deleteUser(String name) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection("Upload_Items")
+          .where("name", isEqualTo: name)
+          .get();
+      querySnapshot.docs.forEach((doc) async {
+        await doc.reference.delete();
+      });
+    } catch (e) {
+      log("Error deleting user: $e");
+    }
   }
 }
