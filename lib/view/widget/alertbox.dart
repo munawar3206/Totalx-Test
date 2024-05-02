@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AlertBoxWidget extends StatefulWidget {
   const AlertBoxWidget({
@@ -15,7 +19,7 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
   final TextEditingController _ageController = TextEditingController();
   final CollectionReference _items =
       FirebaseFirestore.instance.collection("Upload_Items");
-
+  String imageUrl = "";
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -92,7 +96,34 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                                                   Color.fromARGB(255, 0, 0, 0),
                                             ),
                                             onPressed: () async {
-                                              Navigator.pop(context);
+                                              // add imagepicker for gallery
+                                              final file = await ImagePicker()
+                                                  .pickImage(
+                                                      source:
+                                                          ImageSource.gallery);
+                                              if (file == null) return;
+                                              String fileName = DateTime.now()
+                                                  .microsecondsSinceEpoch
+                                                  .toString();
+
+                                              // Get the reference to storage
+                                              Reference referenceRoot =
+                                                  FirebaseStorage.instance
+                                                      .ref();
+                                              Reference referenceDireImage =
+                                                  referenceRoot.child('images');
+
+                                              Reference referenceImageToUpload =
+                                                  referenceDireImage
+                                                      .child(fileName);
+
+                                              try {
+                                                await referenceImageToUpload
+                                                    .putFile(File(file.path));
+                                                imageUrl =
+                                                    await referenceImageToUpload
+                                                        .getDownloadURL();
+                                              } catch (e) {}
                                             },
                                             child: Image.asset(
                                               "assets/gal;l.png",
@@ -119,7 +150,11 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                                                   Color.fromARGB(255, 0, 0, 0),
                                             ),
                                             onPressed: () async {
-                                              Navigator.pop(context);
+                                              final file = await ImagePicker()
+                                                  .pickImage(
+                                                      source:
+                                                          ImageSource.camera);
+                                              if (file == null) return;
                                             },
                                             child: Image.asset(
                                               "assets/camer-removebg-preview.png",
@@ -224,13 +259,20 @@ class _AlertBoxWidgetState extends State<AlertBoxWidget> {
                     color: const Color.fromARGB(255, 49, 73, 255)),
                 child: MaterialButton(
                   onPressed: () async {
+                    if (imageUrl.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Please select and Upload Image")));
+                      return;
+                    }
                     final String name = _nameController.text;
                     final int? age = int.tryParse(_ageController.text);
                     if (age != null) {
-                      await _items.add({"name": name, "age": age});
+                      await _items
+                          .add({"name": name, "age": age, "image": imageUrl});
                       _nameController.text = "";
                       _ageController.text = '';
-                      Navigator.pop(context);
+
+                      // Navigator.pop(context);
                     }
                   },
                   child: const Text(

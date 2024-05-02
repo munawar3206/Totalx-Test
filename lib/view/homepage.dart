@@ -195,6 +195,14 @@ class _HomePageState extends State<HomePage> {
                                     children: [
                                       CircleAvatar(
                                         radius: 30,
+                                        child: thisItems.containsKey('image')
+                                            ? ClipOval(
+                                                child: Image.network(
+                                                  "${thisItems['image']}",
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              )
+                                            : const CircleAvatar(),
                                       ),
                                       Padding(
                                         padding: EdgeInsets.all(8.0),
