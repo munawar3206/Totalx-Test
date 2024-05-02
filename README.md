@@ -1,16 +1,19 @@
-# totalxtask
+TotalXTask
+TotalXTask is a Flutter application for managing user databases with Firebase storage. It provides mobile phone authentication and utilizes the Provider package for state management. Users can perform various functions including adding, deleting, and searching for users based on name and age filters.
 
-A new Flutter project.
+Features
+#User Authentication: Utilizes Firebase for mobile phone authentication.
 
-## Getting Started
+#State Management: Implements Provider package for efficient state management.
 
-This project is a starting point for a Flutter application.
+#Database Operations:
 
-A few resources to get you started if this is your first Flutter project:
+***Add: Users can add new entries to the database.
+***Delete: Provides functionality to delete existing user entries.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+#Search Functionality:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+***Users can search for entries based on name and age filters.
+***Age filters allow users to find individuals older or younger than a specified age.
+
+
