@@ -6,6 +6,7 @@ import 'package:totalxtask/controller/add_data_provider.dart';
 import 'package:totalxtask/controller/home_provider.dart';
 import 'package:totalxtask/firebase_options.dart';
 import 'package:totalxtask/view/homepage.dart';
+import 'package:totalxtask/view/loginscreens/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,12 +32,11 @@ class MyApp extends StatelessWidget {
           create: (context) => UserProvider(),
         )
       ],
-      child: const MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
-          home: HomePage()
-          // auth.currentUser != null ? HomePage() : LoginPage(),
-          ),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        home: auth.currentUser != null ? HomePage() : LoginPage(),
+      ),
     );
   }
 }

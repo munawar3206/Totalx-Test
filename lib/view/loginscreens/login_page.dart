@@ -9,6 +9,11 @@ class LoginPage extends StatelessWidget {
 
   Future<void> _submitPhoneNum(BuildContext context) async {
     String phoneNumber = _phoneNumberController.text.trim();
+
+    if (!phoneNumber.startsWith("+91")) {
+      phoneNumber = "+91" + phoneNumber;
+    }
+
     FirebaseAuth auth = FirebaseAuth.instance;
     await auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
@@ -18,13 +23,14 @@ class LoginPage extends StatelessWidget {
         },
         codeSent: (String verificationId, forceResendingToken) {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OtpScreen(
-                  verificationid: verificationId,
-                  phoneNumberController: phoneNumber,
-                ),
-              ));
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpScreen(
+                verificationid: verificationId,
+                phoneNumberController: phoneNumber,
+              ),
+            ),
+          );
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }
@@ -37,7 +43,6 @@ class LoginPage extends StatelessWidget {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 50),

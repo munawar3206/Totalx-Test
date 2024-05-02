@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:totalxtask/view/homepage.dart';
@@ -34,11 +36,11 @@ class OtpScreen extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>  HomePage(),
+          builder: (context) => const HomePage(),
         ),
       );
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
     }
   }
 

@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:totalxtask/controller/home_provider.dart';
+import 'package:totalxtask/view/loginscreens/login_page.dart';
 import 'package:totalxtask/view/widget/alertbox.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,6 +16,26 @@ class HomePage extends StatelessWidget {
           child: GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
             child: Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.black,
+                actions: [
+                  IconButton(
+                      tooltip: "Logout",
+                      onPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ));
+                      },
+                      icon: const Icon(
+                        Icons.logout_outlined,
+                        color: Colors.redAccent,
+                      ))
+                ],
+              ),
               backgroundColor: const Color.fromARGB(255, 233, 233, 233),
               body: Padding(
                 padding: const EdgeInsets.all(13.0),
@@ -257,7 +279,7 @@ class HomePage extends StatelessWidget {
                                           ),
                                         ),
                                         IconButton(
-                                          icon: Icon(
+                                          icon: const Icon(
                                             Icons.delete,
                                             color: Colors.red,
                                           ),
