@@ -48,11 +48,11 @@ class HomeProvider extends ChangeNotifier {
 
     if (selectedAgeOption == 'Elder') {
       items = items
-          .where((item) => int.parse(item['age'].toString()) <= 40)
+          .where((item) => int.parse(item['age'].toString()) <= 60)
           .toList();
     } else if (selectedAgeOption == 'Younger') {
       items = items
-          .where((item) => int.parse(item['age'].toString()) >= 41)
+          .where((item) => int.parse(item['age'].toString()) >= 61)
           .toList();
     }
 
