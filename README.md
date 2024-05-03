@@ -32,6 +32,6 @@ Implements Provider package for efficient state management.
 
 ## UI
 
-![Screenshot 2024-05-03 070518](https://github.com/munawar3206/Totalx-Test/assets/134474387/96ef5a9d-a44a-45e8-be54-c22f2ae53007)
-![Screenshot 2024-05-03 070630](https://github.com/munawar3206/Totalx-Test/assets/134474387/e45e5b6b-971e-4e4e-8bf3-353f0140933c)
-![Screenshot 2024-05-03 070713](https://github.com/munawar3206/Totalx-Test/assets/134474387/ba7c2659-7dd4-408b-8b80-175728c589be)
+<img src="https://github.com/munawar3206/Totalx-Test/assets/134474387/96ef5a9d-a44a-45e8-be54-c22f2ae53007.png" alt="Screenshot 2024-05-03 070518" width="200" height="400">
+<img src="https://github.com/munawar3206/Totalx-Test/assets/134474387/e45e5b6b-971e-4e4e-8bf3-353f0140933c.png" alt="Screenshot 2024-05-03 070630" width="200" height="400">
+<img src="https://github.com/munawar3206/Totalx-Test/assets/134474387/ba7c2659-7dd4-408b-8b80-175728c589be.png" alt="Screenshot 2024-05-03 070713" width="200" height="400">
