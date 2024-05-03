@@ -17,7 +17,7 @@ class AlertBoxWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userprovider = Provider.of<UserProvider>(context);
+    final userprovider = Provider.of<UserProvider>(context, listen: false);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: Column(
@@ -33,11 +33,17 @@ class AlertBoxWidget extends StatelessWidget {
           Center(
             child: Stack(
               children: [
-                CircleAvatar(
-                  radius: 35,
-                  backgroundImage: userprovider.imageUrl.isNotEmpty
-                      ? NetworkImage(userprovider.imageUrl)
-                      : null,
+                Consumer<UserProvider>(
+                  builder: (context, userprovider, _) {
+                    return CircleAvatar(
+                      radius: 35,
+                      backgroundImage: userprovider.imageUrl.isNotEmpty
+                          ? NetworkImage(userprovider.imageUrl)
+                          : const AssetImage(
+                              'assets/google__2_-removebg-preview.png',
+                            ) as ImageProvider<Object>?,
+                    );
+                  },
                 ),
                 Positioned(
                   top: 42,
@@ -69,138 +75,147 @@ class AlertBoxWidget extends StatelessWidget {
                           ),
                         ),
                         builder: (_) {
-                          return ListView(
-                            shrinkWrap: true,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.all(15.0),
-                                child: Text(
-                                  "Pick Image From",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 20,
+                          return SizedBox(
+                            height: 200,
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(15.0),
+                                  child: Text(
+                                    "Pick Image From",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 20,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Column(
-                                    children: [
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: const CircleBorder(),
-                                          elevation: 20,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 0, 0, 0),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            shape: const CircleBorder(),
+                                            elevation: 20,
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 0, 0, 0),
+                                          ),
+                                          onPressed: () async {
+                                            // add imagepicker for gallery
+                                            final file = await ImagePicker()
+                                                .pickImage(
+                                                    source:
+                                                        ImageSource.gallery);
+                                            if (file == null) return;
+                                            String fileName = DateTime.now()
+                                                .microsecondsSinceEpoch
+                                                .toString();
+
+                                            // get the reference to storage
+                                            Reference referenceRoot =
+                                                FirebaseStorage.instance.ref();
+                                            Reference referenceDireImage =
+                                                referenceRoot.child('images');
+
+                                            Reference referenceImageToUpload =
+                                                referenceDireImage
+                                                    .child(fileName);
+
+                                            try {
+                                              await referenceImageToUpload
+                                                  .putFile(File(file.path));
+
+                                              userprovider.imageUrl = '';
+
+                                              userprovider.imageUrl =
+                                                  await referenceImageToUpload
+                                                      .getDownloadURL();
+                                            } catch (e) {}
+                                          },
+                                          child: Image.asset(
+                                            "assets/gal;l.png",
+                                            height: 30,
+                                          ),
                                         ),
-                                        onPressed: () async {
-                                          // add imagepicker for gallery
-                                          final file = await ImagePicker()
-                                              .pickImage(
-                                                  source: ImageSource.gallery);
-                                          if (file == null) return;
-                                          String fileName = DateTime.now()
-                                              .microsecondsSinceEpoch
-                                              .toString();
-
-                                          // Get the reference to storage
-                                          Reference referenceRoot =
-                                              FirebaseStorage.instance.ref();
-                                          Reference referenceDireImage =
-                                              referenceRoot.child('images');
-
-                                          Reference referenceImageToUpload =
-                                              referenceDireImage
-                                                  .child(fileName);
-
-                                          try {
-                                            await referenceImageToUpload
-                                                .putFile(File(file.path));
-
-                                            userprovider.imageUrl = '';
-                                            // });
-                                            userprovider.imageUrl =
-                                                await referenceImageToUpload
-                                                    .getDownloadURL();
-                                          } catch (e) {}
-                                        },
-                                        child: Image.asset(
-                                          "assets/gal;l.png",
-                                          height: 30,
+                                        const SizedBox(
+                                          height: 5,
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      const Text(
-                                        "Gallery",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w800,
+                                        const Text(
+                                          "Gallery",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            shape: const CircleBorder(),
+                                            elevation: 20,
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 0, 0, 0),
+                                          ),
+                                          onPressed: () async {
+                                            // add imagepicker for gallery
+                                            final file = await ImagePicker()
+                                                .pickImage(
+                                                    source: ImageSource.camera);
+                                            if (file == null) return;
+                                            String fileName = DateTime.now()
+                                                .microsecondsSinceEpoch
+                                                .toString();
+
+                                            // Get the reference to storage
+                                            Reference referenceRoot =
+                                                FirebaseStorage.instance.ref();
+                                            Reference referenceDireImage =
+                                                referenceRoot.child('images');
+
+                                            Reference referenceImageToUpload =
+                                                referenceDireImage
+                                                    .child(fileName);
+
+                                            try {
+                                              await referenceImageToUpload
+                                                  .putFile(File(file.path));
+
+                                              userprovider.imageUrl = '';
+
+                                              userprovider.imageUrl =
+                                                  await referenceImageToUpload
+                                                      .getDownloadURL();
+                                            } catch (e) {}
+                                          },
+                                          child: Image.asset(
+                                            "assets/camer-removebg-preview.png",
+                                            height: 30,
+                                          ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: const CircleBorder(),
-                                          elevation: 20,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 0, 0, 0),
+                                        const SizedBox(
+                                          height: 5,
                                         ),
-                                        onPressed: () async {
-                                          // add imagepicker for gallery
-                                          final file = await ImagePicker()
-                                              .pickImage(
-                                                  source: ImageSource.camera);
-                                          if (file == null) return;
-                                          String fileName = DateTime.now()
-                                              .microsecondsSinceEpoch
-                                              .toString();
-
-                                          // Get the reference to storage
-                                          Reference referenceRoot =
-                                              FirebaseStorage.instance.ref();
-                                          Reference referenceDireImage =
-                                              referenceRoot.child('images');
-
-                                          Reference referenceImageToUpload =
-                                              referenceDireImage
-                                                  .child(fileName);
-
-                                          try {
-                                            await referenceImageToUpload
-                                                .putFile(File(file.path));
-
-                                            userprovider.imageUrl = '';
-
-                                            userprovider.imageUrl =
-                                                await referenceImageToUpload
-                                                    .getDownloadURL();
-                                          } catch (e) {}
-                                        },
-                                        child: Image.asset(
-                                          "assets/camer-removebg-preview.png",
-                                          height: 30,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      const Text(
-                                        "Camera",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
+                                        const Text(
+                                          "Camera",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );

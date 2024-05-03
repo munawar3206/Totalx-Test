@@ -33,10 +33,11 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        home: auth.currentUser != null ? HomePage() : LoginPage(),
-      ),
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          home: 
+           auth.currentUser != null ? HomePage() : LoginPage(),
+          ),
     );
   }
 }
