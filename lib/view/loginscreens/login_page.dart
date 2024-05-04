@@ -1,39 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:totalxtask/view/loginscreens/otp.dart';
+import 'package:totalxtask/view/service/phone_auth_service.dart';
+// import 'phone_auth.dart';
 
 class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+  LoginPage();
 
   final TextEditingController _phoneNumberController = TextEditingController();
-
-  Future<void> _submitPhoneNum(BuildContext context) async {
-    String phoneNumber = _phoneNumberController.text.trim();
-
-    if (!phoneNumber.startsWith("+91")) {
-      phoneNumber = "+91" + phoneNumber;
-    }
-
-    FirebaseAuth auth = FirebaseAuth.instance;
-    await auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (PhoneAuthCredential credential) async {},
-        verificationFailed: (FirebaseAuthException e) {
-          print(e.message.toString());
-        },
-        codeSent: (String verificationId, forceResendingToken) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtpScreen(
-                verificationid: verificationId,
-                phoneNumberController: phoneNumber,
-              ),
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +38,7 @@ class LoginPage extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                     hintText: "Enter Phone Number *",
-                    hintStyle:
-                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10))),
               ),
@@ -106,12 +78,7 @@ class LoginPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(25)),
                 child: MaterialButton(
                   onPressed: () {
-                    _submitPhoneNum(context);
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) => OtpScreen(verificationid:verificationid ,),
-                    //     ));
+                    submitPhoneNum(context, _phoneNumberController);
                   },
                   child: const Text(
                     "Get OTP",
