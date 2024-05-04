@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:totalxtask/view/loginscreens/otp.dart';
-import 'package:totalxtask/view/service/phone_auth_service.dart';
-// import 'phone_auth.dart';
+import 'package:totalxtask/service/phone_auth_service.dart';
+
 
 class LoginPage extends StatelessWidget {
   LoginPage();
