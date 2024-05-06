@@ -1,4 +1,6 @@
+import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -6,25 +8,34 @@ class UserProvider extends ChangeNotifier {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   String imageUrl = "";
-
+  String image = "";
+// image picker
   Future<void> uploadImage(ImageSource source) async {
-    final file = await ImagePicker().pickImage(source: source);
-    if (file == null) return;
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: source,
+    );
+    if (image != null) {
+      imageUrl = image.path;
+    }
+
+    notifyListeners();
   }
 
-  Future<void> addUser(BuildContext context) async {
-    if (imageUrl.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Please select and Upload Image"),
-      ));
-      return;
-    }
-    final String name = nameController.text;
-    final int? age = int.tryParse(ageController.text);
-    if (age != null) {
-      nameController.text = name;
-      ageController.text = age.toString();
-      Navigator.pop(context);
+// image to firebase
+  Future<String> imagepick() async {
+    String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDireImage = referenceRoot.child('images');
+
+    Reference referenceImageToUpload = referenceDireImage.child(fileName);
+
+    try {
+      await referenceImageToUpload.putFile(File(imageUrl));
+
+      return await referenceImageToUpload.getDownloadURL();
+    } catch (e) {
+      throw (e);
     }
   }
 }

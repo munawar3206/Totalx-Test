@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -37,11 +35,9 @@ class AlertBoxWidget extends StatelessWidget {
                   builder: (context, userprovider, _) {
                     return CircleAvatar(
                       radius: 35,
-                      backgroundImage: userprovider.imageUrl.isNotEmpty
-                          ? NetworkImage(userprovider.imageUrl)
-                          : const AssetImage(
-                              'assets/google__2_-removebg-preview.png',
-                            ) as ImageProvider<Object>?,
+                      backgroundImage: userprovider.imageUrl.isEmpty
+                          ? null
+                          : FileImage(File(userprovider.imageUrl)),
                     );
                   },
                 ),
@@ -109,35 +105,8 @@ class AlertBoxWidget extends StatelessWidget {
                                           ),
                                           onPressed: () async {
                                             // add imagepicker for gallery
-                                            final file = await ImagePicker()
-                                                .pickImage(
-                                                    source:
-                                                        ImageSource.gallery);
-                                            if (file == null) return;
-                                            String fileName = DateTime.now()
-                                                .microsecondsSinceEpoch
-                                                .toString();
-
-                                            // get the reference to storage
-                                            Reference referenceRoot =
-                                                FirebaseStorage.instance.ref();
-                                            Reference referenceDireImage =
-                                                referenceRoot.child('images');
-
-                                            Reference referenceImageToUpload =
-                                                referenceDireImage
-                                                    .child(fileName);
-
-                                            try {
-                                              await referenceImageToUpload
-                                                  .putFile(File(file.path));
-
-                                              userprovider.imageUrl = '';
-
-                                              userprovider.imageUrl =
-                                                  await referenceImageToUpload
-                                                      .getDownloadURL();
-                                            } catch (e) {}
+                                            userprovider.uploadImage(
+                                                ImageSource.gallery);
                                           },
                                           child: Image.asset(
                                             "assets/gal;l.png",
@@ -165,36 +134,10 @@ class AlertBoxWidget extends StatelessWidget {
                                                 const Color.fromARGB(
                                                     255, 0, 0, 0),
                                           ),
+                                          // camera image
                                           onPressed: () async {
-                                            // add imagepicker for gallery
-                                            final file = await ImagePicker()
-                                                .pickImage(
-                                                    source: ImageSource.camera);
-                                            if (file == null) return;
-                                            String fileName = DateTime.now()
-                                                .microsecondsSinceEpoch
-                                                .toString();
-
-                                            // Get the reference to storage
-                                            Reference referenceRoot =
-                                                FirebaseStorage.instance.ref();
-                                            Reference referenceDireImage =
-                                                referenceRoot.child('images');
-
-                                            Reference referenceImageToUpload =
-                                                referenceDireImage
-                                                    .child(fileName);
-
-                                            try {
-                                              await referenceImageToUpload
-                                                  .putFile(File(file.path));
-
-                                              userprovider.imageUrl = '';
-
-                                              userprovider.imageUrl =
-                                                  await referenceImageToUpload
-                                                      .getDownloadURL();
-                                            } catch (e) {}
+                                            userprovider.uploadImage(
+                                                ImageSource.camera);
                                           },
                                           child: Image.asset(
                                             "assets/camer-removebg-preview.png",
@@ -304,6 +247,7 @@ class AlertBoxWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     color: const Color.fromARGB(255, 49, 73, 255)),
                 child: MaterialButton(
+                  //  save button
                   onPressed: () async {
                     if (userprovider.imageUrl.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -318,11 +262,12 @@ class AlertBoxWidget extends StatelessWidget {
                       await _items.add({
                         "name": name,
                         "age": age,
-                        "image": userprovider.imageUrl,
+                        "image": await userprovider.imagepick(),
                       });
                       userprovider.nameController.text = "";
                       userprovider.ageController.text = '';
-
+                      userprovider.image = '';
+                      userprovider.imageUrl = '';
                       Navigator.pop(context);
                     }
                   },
