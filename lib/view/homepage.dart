@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterflow_paginate_firestore/paginate_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:totalxtask/controller/home_provider.dart';
@@ -202,96 +203,112 @@ class HomePage extends StatelessWidget {
                                 document.map((e) => e.data() as Map).toList();
 
                             items = homeProvider.filterItems(items);
-
-                            return ListView.separated(
-                                separatorBuilder: (context, index) {
-                                  return const SizedBox(
-                                    height: 10,
-                                  );
-                                },
-                                itemCount: items.length,
-                                itemBuilder: (context, index) {
-                                  Map thisItems = items[index];
-                                  return Container(
-                                    height: 80,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                        boxShadow: const [
-                                          BoxShadow(blurRadius: .2)
-                                        ],
-                                        color: const Color.fromARGB(
-                                            255, 255, 255, 255),
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 10, left: 15),
-                                                child: Row(
-                                                  children: [
-                                                    CircleAvatar(
-                                                      radius: 30,
-                                                      backgroundImage: thisItems
-                                                              .containsKey(
-                                                                  'image')
-                                                          ? NetworkImage(
-                                                              "${thisItems['image']}")
-                                                          : null,
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            "${thisItems['name']}",
-                                                            style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                          const SizedBox(
-                                                              height: 5),
-                                                          Text(
-                                                            "Age : ${thisItems['age']}",
-                                                            style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () {
-                                            homeProvider
-                                                .deleteUser(thisItems['name']);
-                                          },
-                                        ),
+// LazyLoading For each 5 items
+                            return PaginateFirestore(
+                              itemsPerPage: 5,
+                              initialLoader: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              onEmpty: const Center(
+                                child: Text("Empty"),
+                              ),
+                              onError: (e) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              bottomLoader: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              query: FirebaseFirestore.instance
+                                  .collection("Upload_Items"),
+                              itemBuilderType: PaginateBuilderType.listView,
+                              separator: const SizedBox(
+                                height: 10,
+                              ),
+                              isLive: true,
+                              itemBuilder: (context, documentSnapshot, index) {
+                                Map thisItems = items[index];
+                                return Container(
+                                  height: 80,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      boxShadow: const [
+                                        BoxShadow(blurRadius: .2)
                                       ],
-                                    ),
-                                  );
-                                });
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 10, left: 15),
+                                              child: Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 30,
+                                                    backgroundImage: thisItems
+                                                            .containsKey(
+                                                                'image')
+                                                        ? NetworkImage(
+                                                            "${thisItems['image']}")
+                                                        : null,
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "${thisItems['name']}",
+                                                          style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 5),
+                                                        Text(
+                                                          "Age : ${thisItems['age']}",
+                                                          style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          homeProvider
+                                              .deleteUser(thisItems['name']);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+
+                                // itemCount: items.length,
+                              },
+                            );
                           }
                           return const Center(
                             child: CircularProgressIndicator(),
