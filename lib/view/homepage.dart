@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterflow_paginate_firestore/paginate_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:totalxtask/controller/home_provider.dart';
 import 'package:totalxtask/view/loginscreens/login_page.dart';
 import 'package:totalxtask/view/widget/alertbox.dart';
-
+import 'package:totalxtask/view/widget/sort_widget.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
@@ -47,8 +45,9 @@ class HomePage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            controller: homeProvider.searchController,
                             onChanged: (value) {
-                              homeProvider.setSearchQuery(value);
+                              homeProvider.search(value);
                             },
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.search),
@@ -70,96 +69,10 @@ class HomePage extends StatelessWidget {
                               builder: (BuildContext context) {
                                 return SizedBox(
                                   height: 200,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Padding(
-                                        padding:
-                                            EdgeInsets.only(top: 10, left: 20),
-                                        child: Text(
-                                          "Sort",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w900),
-                                        ),
-                                      ),
-                                      ListTile(
-                                        leading: IconButton(
-                                          onPressed: () {
-                                            homeProvider
-                                                .setSelectedAgeOption('All');
-                                            Navigator.pop(context);
-                                          },
-                                          icon: homeProvider
-                                                      .selectedAgeOption ==
-                                                  'All'
-                                              ? const Icon(Icons
-                                                  .radio_button_on_outlined)
-                                              : const Icon(Icons
-                                                  .radio_button_off_outlined),
-                                        ),
-                                        title: const Text('All'),
-                                        onTap: () {
-                                          homeProvider
-                                              .setSelectedAgeOption('All');
-                                          Navigator.pop(context);
-                                        },
-                                        selected:
-                                            homeProvider.selectedAgeOption ==
-                                                'All',
-                                      ),
-                                      ListTile(
-                                        leading: IconButton(
-                                          onPressed: () {
-                                            homeProvider
-                                                .setSelectedAgeOption('Elder');
-                                            Navigator.pop(context);
-                                          },
-                                          icon: homeProvider
-                                                      .selectedAgeOption ==
-                                                  'Elder'
-                                              ? const Icon(Icons
-                                                  .radio_button_on_outlined)
-                                              : const Icon(Icons
-                                                  .radio_button_off_outlined),
-                                        ),
-                                        title: const Text('Age : Elder'),
-                                        onTap: () {
-                                          homeProvider
-                                              .setSelectedAgeOption('Elder');
-                                          Navigator.pop(context);
-                                        },
-                                        selected:
-                                            homeProvider.selectedAgeOption ==
-                                                'Elder',
-                                      ),
-                                      ListTile(
-                                        leading: IconButton(
-                                          onPressed: () {
-                                            homeProvider.setSelectedAgeOption(
-                                                'Younger');
-                                            Navigator.pop(context);
-                                          },
-                                          icon: homeProvider
-                                                      .selectedAgeOption ==
-                                                  'Younger'
-                                              ? const Icon(Icons
-                                                  .radio_button_on_outlined)
-                                              : const Icon(Icons
-                                                  .radio_button_off_outlined),
-                                        ),
-                                        title: const Text('Age : Younger'),
-                                        onTap: () {
-                                          homeProvider
-                                              .setSelectedAgeOption('Younger');
-                                          Navigator.pop(context);
-                                        },
-                                        selected:
-                                            homeProvider.selectedAgeOption ==
-                                                'Younger',
-                                      ),
-                                    ],
+                                  child: Consumer<HomeProvider>(
+                                    builder: (context, value, child) {
+                                      return Sort();
+                                    },
                                   ),
                                 );
                               },
@@ -191,128 +104,97 @@ class HomePage extends StatelessWidget {
                       height: 10,
                     ),
                     Expanded(
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: homeProvider.stream,
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            QuerySnapshot querySnapshot = snapshot.data!;
-                            List<QueryDocumentSnapshot> document =
-                                querySnapshot.docs;
-                            List<Map> items =
-                                document.map((e) => e.data() as Map).toList();
-
-                            items = homeProvider.filterItems(items);
-// LazyLoading For each 5 items
-                            return PaginateFirestore(
-                              itemsPerPage: 5,
-                              initialLoader: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              onEmpty: const Center(
-                                child: Text("Empty"),
-                              ),
-                              onError: (e) => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              bottomLoader: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              query: FirebaseFirestore.instance
-                                  .collection("Upload_Items"),
-                              itemBuilderType: PaginateBuilderType.listView,
-                              separator: const SizedBox(
-                                height: 10,
-                              ),
-                              isLive: true,
-                              itemBuilder: (context, documentSnapshot, index) {
-                                Map thisItems = items[index];
-                                return Container(
-                                  height: 80,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                      boxShadow: const [
-                                        BoxShadow(blurRadius: .2)
-                                      ],
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 10, left: 15),
-                                              child: Row(
-                                                children: [
-                                                  CircleAvatar(
-                                                    radius: 30,
-                                                    backgroundImage: thisItems
-                                                            .containsKey(
-                                                                'image')
-                                                        ? NetworkImage(
-                                                            "${thisItems['image']}")
-                                                        : null,
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          "${thisItems['name']}",
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 5),
-                                                        Text(
-                                                          "Age : ${thisItems['age']}",
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ),
-                                        onPressed: () {
-                                          homeProvider
-                                              .deleteUser(thisItems['name']);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-
-                                // itemCount: items.length,
-                              },
-                            );
-                          }
-                          return const Center(
-                            child: CircularProgressIndicator(),
+                      child: ListView.separated(
+                        controller: homeProvider.scrollController,
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(
+                            height: 5,
                           );
+                        },
+                        itemCount: homeProvider.isSorting
+                            ? homeProvider.sorteddata.length
+                            : homeProvider.userslist.length + 1,
+                        itemBuilder: (context, index) {
+                          final condition = homeProvider.isSorting
+                              ? homeProvider.sorteddata.length
+                              : homeProvider.userslist.length;
+                          if (index < condition) {
+                            final data = homeProvider.isSorting
+                                ? homeProvider.sorteddata[index]
+                                : homeProvider.userslist[index];
+                            return Container(
+                              height: 80,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                boxShadow: const [BoxShadow(blurRadius: .2)],
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, left: 15),
+                                          child: Row(
+                                            children: [
+                                              CircleAvatar(
+                                                  radius: 30,
+                                                  backgroundImage:
+                                                      NetworkImage(data.image)),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      data.name,
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Text(
+                                                      "Age : ${data.age}",
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      homeProvider.deleteUser(data.name);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else if (homeProvider.userslist.length !=
+                              homeProvider.alldata.length) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
                         },
                       ),
                     )

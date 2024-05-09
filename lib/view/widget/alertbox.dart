@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:totalxtask/controller/add_data_provider.dart';
+import 'package:totalxtask/controller/home_provider.dart';
+import 'package:totalxtask/view/widget/save_dialogue.dart';
 
 class AlertBoxWidget extends StatelessWidget {
   AlertBoxWidget({
@@ -16,6 +18,7 @@ class AlertBoxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userprovider = Provider.of<UserProvider>(context, listen: false);
+    final homeprovider = Provider.of<HomeProvider>(context, listen: false);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: Column(
@@ -259,16 +262,29 @@ class AlertBoxWidget extends StatelessWidget {
                     final int? age =
                         int.tryParse(userprovider.ageController.text);
                     if (age != null) {
-                      await _items.add({
-                        "name": name,
-                        "age": age,
-                        "image": await userprovider.imagepick(),
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return const savedialogue();
+                        },
+                      );
+
+                      await Future.microtask(() async {
+                        await _items.add({
+                          "name": name,
+                          "age": age,
+                          "image": await userprovider.imagepick(),
+                        });
+                        Navigator.pop(context);
+                        Navigator.pop(context);
                       });
+                      homeprovider.getdata();
+                      homeprovider.fetchalldata();
                       userprovider.nameController.text = "";
                       userprovider.ageController.text = '';
                       userprovider.image = '';
                       userprovider.imageUrl = '';
-                      Navigator.pop(context);
                     }
                   },
                   child: const Text(
